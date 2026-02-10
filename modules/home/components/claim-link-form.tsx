@@ -48,26 +48,54 @@ const ClaimLinkForm=()=> {
   },[linkValue])
 
 
-  const handleSubmit = async(e:React.FormEvent)=>{
-    try {
-      e.preventDefault();
-      if(linkValue.trim() && isAvailable){
-        setIsClaiming(true);
-        const result = await claimUsername(linkValue);
-        if(result.success){
-          toast.success("Link claimed successfully")
-          setLinkValue("")
-          router.push("/admin/my-tree")
-        }
-      }
-    } catch (error) {
-       console.error("Error claiming link:", error);
-      toast.error("Failed to claim link. Please try again.");
+  // const handleSubmit = async(e:React.FormEvent)=>{
+  //     e.preventDefault();
+  //   try {
+    
+  //     if(linkValue.trim() && isAvailable){
+  //       setIsClaiming(true);
+  //       const result = await claimUsername(linkValue);
+  //       if(result.success){
+  //         toast.success("Link claimed successfully")
+  //         setLinkValue("")
+  //         router.push("/admin/my-tree")
+  //       }
+  //     }
+  //   } catch (error) {
+  //      console.error("Error claiming link:", error);
+  //     toast.error("Failed to claim link. Please try again.");
+  //   }
+  //   finally{
+  //     setIsClaiming(false)
+  //   }
+  // }
+const handleSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
+
+  if (!linkValue.trim() || !isAvailable) return;
+
+  setIsClaiming(true);
+
+  try {
+    const result = await claimUsername(linkValue);
+
+    if (result.success) {
+      toast.success("Link claimed successfully");
+      setLinkValue("");
+      router.push("/admin/my-tree");
+    } else {
+      toast.error(result.error || "Failed to claim link");
     }
-    finally{
-      setIsClaiming(false)
-    }
+  } catch (error) {
+    console.error("Error claiming link:", error);
+    toast.error("Failed to claim link. Please try again.");
+  } finally {
+    setIsClaiming(false);
   }
+};
+
 
  const displayOrigin=origin
              ?origin.replace("https://","").replace("http://","")

@@ -33,12 +33,16 @@ export const claimUsername=async(username:string)=>{
     if(!loggedInUser)return{
         success:false,error:"No authenticated user found"
     }
-    const user=await db.user.update(
+    const user=await db.user.upsert(
         {
             where:{
                 clerkId:loggedInUser.id
-            },data:{
+            },update:{
                 username:username 
+            },create:{
+                clerkId: loggedInUser.id,
+    username: username,
+    email: loggedInUser.emailAddresses[0]?.emailAddress ?? "",
             }
         }
     )
