@@ -24,38 +24,30 @@ export const checkProfileUsernameAvailability = async (username: string) => {
   };
 };
 
-export const claimUsername = async (username: string) => {
-  const loggedInUser = await currentUser();
+export const claimUsername = async (username:string)=>{
+    const loggedInUser = await currentUser();
 
-  if (!loggedInUser)
-    return {
-      success: false,
-      error: 'No authenticated user found',
-    };
-  const user = await db.user.upsert({
-    where: {
-      clerkId: loggedInUser.id,
-    },
-    update: {
-      username: username,
-    },
-    create: {
-      clerkId: loggedInUser.id,
-      username: username,
-      email: loggedInUser.emailAddresses[0]?.emailAddress ?? '',
-    },
-  });
+    if(!loggedInUser) return {
+        success: false, error: "No authenticated user found"
+    }
+    
+    const user = await db.user.update({
+        where:{
+            clerkId:loggedInUser.id
+        },
+        data:{
+            username:username,
+        }
+    })
 
-  if (!user) return { success: false, error: 'No authenticated user found' };
-  return {
-    success: true,
-  };
-};
+      if (!user) return { success: false, error: "No authenticated user found" };
+
+      return { success: true };
+}
 
 
 export const getCurrentUsername=async()=>{
   const user=await currentUser();
-
 
   const currentUsername=await db.user.findUnique(
    {where :{
